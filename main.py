@@ -1,29 +1,21 @@
 from pyrogram import Client, filters
-import configparser
-
-config = configparser.ConfigParser()
-config.read("config.ini")
-
-api_id = int(config["pyrogram"]["api_id"])
-api_hash = config["pyrogram"]["api_hash"]
-session_name = "my_session"
+from settings import api_id, api_hash, session_name, chats_id
 
 app = Client(session_name, api_id, api_hash)
 
-source_chat = -4703732482
-target_chat = -4696004023
+#команда .type
+@app.on_message(filters.command("type", prefixes=".") & filters.me)
+async def get_chat_id(client, message):
+    print(f"Chat ID: {message.chat.id}")
 
-
-# @app.on_message()
-# async def get_chat_id(client, message):
-#     print(f"Chat ID: {message.chat.id}")  # Выведет ID чата
-
-# app.run()
-
-@app.on_message(filters.chat(source_chat)) 
+#Функция для пересылки сообщений между чатами
+@app.on_message(filters.all)
 async def forward_message(client, message):
     try:
-        await client.forward_messages(target_chat, message.chat.id, message.id)
+        for source_chat, target_chat in chats_id.items():
+            if message.chat.id == source_chat:
+                await client.forward_messages(target_chat, message.chat.id, message.id)
+                break
     except Exception as e:
         print(f"Error: {e}")
 
