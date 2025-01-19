@@ -169,3 +169,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+config.ini
+poetry.lock
+my_session.session
+my_account.session
